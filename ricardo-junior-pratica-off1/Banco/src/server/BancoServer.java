@@ -22,6 +22,10 @@ public class BancoServer {
 
     public static final Seguranca seguranca = new Seguranca(192);
 
+    private final Double POUPANCA = 0.5d;
+
+    private final Double RENDA_FIXA = 1.5d;
+
     public BancoServer() {
         this.tabela = new Table<>();
         this.tabela.Adicionar(
@@ -60,7 +64,7 @@ public class BancoServer {
         String hmac = "";
         try {
             while ((mensagem = clientSocket.getMessage()) != null) {
-                if(!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")){
+                if (!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")) {
                     System.out.println("ENTREI: " + mensagem);
                     hmac = mensagem.split(";")[1];
                     mensagem = seguranca.decifrar(mensagem.split(";")[0]);
@@ -182,11 +186,80 @@ public class BancoServer {
                         break;
                     }
                     case "7": {
-                        // INVESTIMENTOS
-                        if (autenticarMensagem(mensagem.split(";")[0], mensagem.split(";")[1])) {
+                        // POUPANÇA
+                        if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
-                            unicast(clientSocket, "Mundo");
+                            ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
+                                    .getValor();
+                            if (Double.parseDouble(mensagem.split(";")[2]) > contaCorrente.getSaldo()) {
+                                unicast(clientSocket, "Saldo INSUFICIENTE");
+                            } else {
+                                Double saldoAnt = contaCorrente.getSaldo();
+                                contaCorrente.setSaldo(calcularJurosCompostos(contaCorrente.getSaldo(), POUPANCA,
+                                        Integer.parseInt(mensagem.split(";")[3])));
+                                try {
+                                    this.tabela.Atualizar(contaCorrente, Integer.parseInt(contaCorrente.getCpf()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                unicast(clientSocket, "INVESTIMENTO APROVADO\nSALDO ANTES: R$ " + saldoAnt
+                                        + "\nSALDO AGORA DE: R$ " + contaCorrente.getSaldo());
+                            }
+                        }
+                        break;
+                    }
+                    case "8": {
+                        // RENDA FIXA
+                        if (autenticarMensagem(mensagem, hmac)) {
+                            System.out.println(
+                                    "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
+                            ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
+                                    .getValor();
+                            if (Double.parseDouble(mensagem.split(";")[2]) > contaCorrente.getSaldo()) {
+                                unicast(clientSocket, "Saldo INSUFICIENTE");
+                            } else {
+                                Double saldoAnt = contaCorrente.getSaldo();
+                                contaCorrente.setSaldo(calcularJurosCompostos(contaCorrente.getSaldo(), RENDA_FIXA,
+                                        Integer.parseInt(mensagem.split(";")[3])));
+                                try {
+                                    this.tabela.Atualizar(contaCorrente, Integer.parseInt(contaCorrente.getCpf()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                unicast(clientSocket, "INVESTIMENTO APROVADO\nSALDO ANTES: R$ " + saldoAnt
+                                        + "\nSALDO AGORA DE: R$ " + contaCorrente.getSaldo());
+                            }
+                        }
+                        break;
+                    }
+                    case "9": {
+                        // INVESTIMENTOS
+                        if (autenticarMensagem(mensagem, hmac)) {
+                            System.out.println(
+                                    "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
+                            ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
+                                    .getValor();
+
+                            Double simulacao = calcularJurosCompostos(contaCorrente.getSaldo(), POUPANCA,
+                                    Integer.parseInt(mensagem.split(";")[3]));
+                            unicast(clientSocket, "SIMULAÇÃO DE INVESTIMENTO NA POUPANÇA POR [ "
+                                    + mensagem.split(";")[3] + " ] MÊSES, RENDERIA: R$ " + simulacao);
+                        }
+                        break;
+                    }
+                    case "10": {
+                        // INVESTIMENTOS
+                        if (autenticarMensagem(mensagem, hmac)) {
+                            System.out.println(
+                                    "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
+                            ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
+                                    .getValor();
+
+                            Double simulacao = calcularJurosCompostos(contaCorrente.getSaldo(), RENDA_FIXA,
+                                    Integer.parseInt(mensagem.split(";")[3]));
+                            unicast(clientSocket, "SIMULAÇÃO DE INVESTIMENTO NA RENDA FIXA POR [ "
+                                    + mensagem.split(";")[3] + " ] MÊSES, RENDERIA: R$ " + simulacao);
                         }
                         break;
                     }
@@ -199,6 +272,14 @@ public class BancoServer {
         } finally {
             clientSocket.close();
         }
+    }
+
+    private double calcularJurosCompostos(double valorPresente, double taxaJuros, int meses) {
+
+        double taxaDecimal = taxaJuros / 100.0;
+
+        return valorPresente * Math.pow(1 + taxaDecimal, meses);
+
     }
 
     private Boolean autenticarMensagem(String mensagem, String hmac_recebido) {

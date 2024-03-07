@@ -83,7 +83,7 @@ public class Usuarios implements Runnable {
 
     private void menu() {
         System.out.println(
-                "> 3 [ SAQUE ]\n> 4 [ DEPÓSITO ]\n> 5 [ Transferência ]\n> 6 [ SALDO ]\n> 7 [ INVESTIMENTOS ]\n> sair");
+                "> 3 [ SAQUE ]\n> 4 [ DEPÓSITO ]\n> 5 [ Transferência ]\n> 6 [ SALDO ]\n> 7 [ INVESTIR EM POUPANÇA ]\n> 8 [ INVESTIR EM RENDA FIXA]\n> 9 [ SIMULAR POUPANÇA ]\n> 10 [ SIMULAR RENDA FIXA ]\n> sair");
     }
 
     private void messageLoop() {
@@ -160,7 +160,7 @@ public class Usuarios implements Runnable {
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "6":
-                 msg = "6;";
+                msg = "6;";
                 System.out.println("> CPF");
                 System.out.print("> ");
                 msg += this.scan.next();
@@ -172,6 +172,76 @@ public class Usuarios implements Runnable {
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "7":
+                msg = "7;";
+                System.out.println("> CPF");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Quantia");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Duração\n> 3 MÊSES\n> 6 MÊSES\n> 12 MÊSES");
+                System.out.print("> ");
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
+                break;
+            case "8":
+                msg = "8;";
+                System.out.println("> CPF");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Quantia");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Duração\n> 3 MÊSES\n> 6 MÊSES\n> 12 MÊSES");
+                System.out.print("> ");
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
+                break;
+            case "9":
+                msg = "9;";
+                System.out.println("> CPF");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Quantia");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Duração\n> 3 MÊSES\n> 6 MÊSES\n> 12 MÊSES");
+                System.out.print("> ");
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
+                break;
+            case "10":
+                msg = "10;";
+                System.out.println("> CPF");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Quantia");
+                System.out.print("> ");
+                msg += this.scan.next() + ";";
+                System.out.println("> Duração\n> 3 MÊSES\n> 6 MÊSES\n> 12 MÊSES");
+                System.out.print("> ");
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
                 break;
             case "sair":
                 System.out.println("Saindo");

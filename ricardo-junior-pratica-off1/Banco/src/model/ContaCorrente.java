@@ -41,6 +41,10 @@ public class ContaCorrente implements Serializable {
         return saldo;
     }
 
+    public void setSaldo(Double investimento) {
+        this.saldo = investimento;
+    }
+
     public String getNome() {
         return nome;
     }
