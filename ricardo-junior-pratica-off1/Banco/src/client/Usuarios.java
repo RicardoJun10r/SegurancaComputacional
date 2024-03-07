@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import util.ClientSocket;
+import util.Seguranca;
 
 public class Usuarios implements Runnable {
 
@@ -17,9 +18,12 @@ public class Usuarios implements Runnable {
 
     private Boolean logado;
 
+    private Seguranca seguranca;
+
     public Usuarios() {
         this.scan = new Scanner(System.in);
         this.logado = false;
+        this.seguranca = Seguranca.getInstance();
     }
 
     @Override
@@ -28,6 +32,12 @@ public class Usuarios implements Runnable {
         while ((mensagem = this.clientSocket.getMessage()) != null) {
             if (mensagem.split(" ")[0].equals("status")) {
                 logado = Boolean.parseBoolean(mensagem.split(" ")[1]);
+                // if (logado) {
+                //     SecretKey chaveSecreta = new SecretKeySpec(
+                //             mensagem.split(" ")[2].getBytes(StandardCharsets.UTF_8),
+                //             "HmacSHA256");
+                //     this.seguranca.setChave(chaveSecreta);
+                // }
             } else {
                 System.out.println(
                         "Resposta do banco: " + mensagem);
@@ -37,18 +47,18 @@ public class Usuarios implements Runnable {
 
     private void autenticar() {
         System.out.println("> 1 Entrar\n> 2 Registrar-se");
+        System.out.print("> ");
         String op = scan.next();
         if (op.equals("1")) {
             System.out.println("> CPF");
             System.out.print("> ");
-            String login = scan.nextLine();
+            String login = scan.next();
             System.out.println("> Senha");
             System.out.print("> ");
             String senha = scan.next();
-            enviar("1 " + login + " " + senha);
+            enviar("1;" + login + ";" + senha);
         } else if (op.equals("2")) {
             String senha;
-            String confirmar_senha;
             String nova_conta = "";
             System.out.println("Registrando\n> CPF");
             System.out.print("> ");
@@ -63,14 +73,6 @@ public class Usuarios implements Runnable {
             System.out.println("> Telefone");
             System.out.print("> ");
             nova_conta += scan.nextLine() + ";";
-            // do {
-            // System.out.println("> Senha");
-            // System.out.print("> ");
-            // senha = scan.next();
-            // System.out.println("> Confirmar Senha");
-            // System.out.print("> ");
-            // confirmar_senha = scan.next();
-            // } while (validarSenha(senha, confirmar_senha));
             System.out.println("> Senha");
             System.out.print("> ");
             senha = scan.next();
@@ -81,13 +83,6 @@ public class Usuarios implements Runnable {
 
     private void enviar(String mensagem) {
         this.clientSocket.sendMessage(mensagem);
-    }
-
-    private Boolean validarSenha(String senha, String confirmar) {
-        if (senha.equals(confirmar) && senha.length() >= 3)
-            return true;
-        else
-            return false;
     }
 
     private void menu() {
@@ -117,12 +112,22 @@ public class Usuarios implements Runnable {
 
     private void processOption(String option) {
         String msg;
+        String msg_cifrada;
+        String hmac;
         switch (option) {
             case "3":
-                System.out.println("Escreva:");
+                System.out.println("> CPF");
                 System.out.print("> ");
-                msg = this.scan.nextLine();
-                enviar("executar " + msg);
+                msg = this.scan.next() + ";";
+                System.out.println("> Quantia");
+                System.out.print("> ");
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar("3;" + msg, this.seguranca.getChave());
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac);
+                System.out.println("Chave: " + this.seguranca.getChave().toString());
+                enviar(msg_cifrada + ";" + hmac + ";" + this.seguranca.getChave().toString());
                 break;
             case "4":
                 System.out.println("> CPF");
