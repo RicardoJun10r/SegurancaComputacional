@@ -20,7 +20,7 @@ public class BancoServer {
 
     private Table<ContaCorrente, Integer> tabela;
 
-    public static final Seguranca seguranca = new Seguranca();
+    public static final Seguranca seguranca = new Seguranca(192);
 
     public BancoServer() {
         this.tabela = new Table<>();
@@ -61,7 +61,7 @@ public class BancoServer {
             while ((mensagem = clientSocket.getMessage()) != null) {
                 if(!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")){
                     System.out.println("ENTREI: " + mensagem);
-                    mensagem = this.seguranca.decifrar(mensagem.split(";")[0], Seguranca.chave);
+                    mensagem = seguranca.decifrar(mensagem.split(";")[0], Seguranca.chave);
                     System.out.println("DECIFRADO: " + mensagem);
                 }
                 switch (mensagem.split(";")[0]) {
@@ -79,7 +79,9 @@ public class BancoServer {
                                 .getValor();
                         if (contaCorrente != null) {
                             if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
-                                unicast(clientSocket, "status true ");
+                                System.out.println("Enviando Chave: " + Seguranca.chave.toString());
+                                clientSocket.enviarObjeto(Seguranca.chave);
+                                unicast(clientSocket, "status true");
                             } else {
                                 unicast(clientSocket, "status false");
                             }
@@ -192,7 +194,7 @@ public class BancoServer {
     }
 
     private Boolean autenticarMensagem(String mensagem, String hmac_recebido) {
-        String hmac = this.seguranca.hMac(mensagem.split(";")[0]);
+        String hmac = seguranca.hMac(mensagem.split(";")[0]);
         System.out.println("hmac: " + hmac + "\nhmac_recebido: " + hmac_recebido);
         if (hmac.equals(hmac_recebido))
             return true;

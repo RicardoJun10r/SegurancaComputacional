@@ -1,5 +1,6 @@
 package util;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -13,9 +14,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
-public class Seguranca {
+public class Seguranca implements Serializable {
 
     public static final String ALG = "HmacSHA256";
 
@@ -36,6 +36,10 @@ public class Seguranca {
     }
 
     public Seguranca(){}
+
+    public void setChave(SecretKey secretKey){
+        chave = secretKey;
+    }
 
     public void gerarChave(int t) throws NoSuchAlgorithmException {
         geradorDeChaves = KeyGenerator.getInstance("AES");

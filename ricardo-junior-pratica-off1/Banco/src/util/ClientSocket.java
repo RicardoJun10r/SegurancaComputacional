@@ -3,6 +3,8 @@ package util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -17,12 +19,18 @@ public class ClientSocket {
 
     private final PrintWriter escritor;
 
+    private ObjectOutputStream ObjectOutputStream;
+
+    private ObjectInputStream objectInputStream;
+
     public ClientSocket(Socket socket) throws IOException{
         this.socket = socket;
         System.out.println("Cliente = " + socket.getRemoteSocketAddress() + " conectado!");
         this.id = socket.getRemoteSocketAddress().toString().split(":")[1];
         this.leitor = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.escritor = new PrintWriter(socket.getOutputStream(), true);
+        this.ObjectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        this.objectInputStream = new ObjectInputStream(socket.getInputStream());
     }
 
     public SocketAddress getSocketAddress(){
@@ -35,6 +43,41 @@ public class ClientSocket {
 
     public String getId(){
         return this.id;
+    }
+
+    public void enviarObjeto(Object object){
+        try {
+            this.ObjectOutputStream.writeObject(object);
+            this.ObjectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Object receberObjeto(){
+        Object object = null;
+        try {
+            object = this.objectInputStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+    public void closeInputStream(){
+        try {
+            this.objectInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeOutputStream(){
+        try {
+            this.objectInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void close(){

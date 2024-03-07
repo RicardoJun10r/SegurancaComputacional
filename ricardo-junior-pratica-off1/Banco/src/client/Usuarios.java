@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import javax.crypto.SecretKey;
+
 import util.ClientSocket;
 import util.Seguranca;
 
@@ -18,7 +20,7 @@ public class Usuarios implements Runnable {
 
     private Boolean logado;
 
-    private Seguranca seguranca;
+    private Seguranca seguranca = new Seguranca();
 
     public Usuarios() {
         this.scan = new Scanner(System.in);
@@ -28,6 +30,9 @@ public class Usuarios implements Runnable {
     @Override
     public void run() {
         String mensagem;
+        if(this.clientSocket.receberObjeto() != null){ 
+            this.seguranca.setChave((SecretKey) this.clientSocket.receberObjeto()); 
+        }
         while ((mensagem = this.clientSocket.getMessage()) != null) {
             if (mensagem.split(" ")[0].equals("status")) {
                 logado = Boolean.parseBoolean(mensagem.split(" ")[1]);
