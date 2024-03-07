@@ -61,7 +61,7 @@ public class BancoServer {
             while ((mensagem = clientSocket.getMessage()) != null) {
                 if(!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")){
                     System.out.println("ENTREI: " + mensagem);
-                    mensagem = seguranca.decifrar(mensagem.split(";")[0], Seguranca.chave);
+                    mensagem = seguranca.decifrar(mensagem.split(";")[0]);
                     System.out.println("DECIFRADO: " + mensagem);
                 }
                 switch (mensagem.split(";")[0]) {
@@ -79,9 +79,14 @@ public class BancoServer {
                                 .getValor();
                         if (contaCorrente != null) {
                             if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
-                                System.out.println("Enviando Chave: " + Seguranca.chave.toString());
-                                clientSocket.enviarObjeto(Seguranca.chave);
                                 unicast(clientSocket, "status true");
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println("Enviando Chave: " + seguranca.getChave().toString());
+                                clientSocket.enviarObjeto(seguranca.getChave());
                             } else {
                                 unicast(clientSocket, "status false");
                             }

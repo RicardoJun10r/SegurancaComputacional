@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -14,6 +15,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 public class Seguranca implements Serializable {
 
@@ -21,13 +23,13 @@ public class Seguranca implements Serializable {
 
     private KeyGenerator geradorDeChaves;
 
-    public static SecretKey chave;
+    private SecretKey chave;
 
     private String mensagem;
 
     private String mensagemCifrada;
 
-    public Seguranca(int num){
+    public Seguranca(int num) {
         try {
             gerarChave(num);
         } catch (NoSuchAlgorithmException e) {
@@ -35,10 +37,15 @@ public class Seguranca implements Serializable {
         }
     }
 
-    public Seguranca(){}
+    public Seguranca() {
+    }
 
-    public void setChave(SecretKey secretKey){
+    public void setChave(SecretKey secretKey) {
         chave = secretKey;
+    }
+
+    public SecretKey getChave() {
+        return chave;
     }
 
     public void gerarChave(int t) throws NoSuchAlgorithmException {
@@ -48,7 +55,7 @@ public class Seguranca implements Serializable {
         System.out.println(Arrays.toString(chave.getEncoded()));
     }
 
-    public String cifrar(String textoAberto, SecretKey chave) {
+    public String cifrar(String textoAberto) {
 
         System.out.println("CIFRANDO");
 
@@ -60,7 +67,7 @@ public class Seguranca implements Serializable {
 
         mensagem = textoAberto;
         try {
-            cifrador = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cifrador = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cifrador.init(Cipher.ENCRYPT_MODE, chave);
             bytesMensagemCifrada = cifrador.doFinal(mensagem.getBytes());
             mensagemCifrada = codificar(bytesMensagemCifrada);
@@ -70,6 +77,7 @@ public class Seguranca implements Serializable {
                 | InvalidKeyException e) {
             e.printStackTrace();
         }
+
         return mensagemCifrada;
     }
 
@@ -88,19 +96,14 @@ public class Seguranca implements Serializable {
         return bytesCifrados;
     }
 
-    public String decifrar(String textoCifrado, SecretKey chave) {
-
-        // byte[] chaveBytes = chave.getBytes(StandardCharsets.UTF_8);
-
-        // // Criar uma instância de SecretKeySpec
+    public String decifrar(String textoCifrado) {
 
         // Decriptação
         byte[] bytesMensagemCifrada = decodificar(textoCifrado);
-        Cipher decriptador = null;
-        String mensagemDecifrada;
+        String mensagemDecifrada = "";
 
         try {
-            decriptador = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher decriptador = Cipher.getInstance("AES/ECB/PKCS5Padding");
             decriptador.init(Cipher.DECRYPT_MODE, chave);
             byte[] bytesMensagemDecifrada = decriptador.doFinal(bytesMensagemCifrada);
             mensagemDecifrada = new String(bytesMensagemDecifrada);

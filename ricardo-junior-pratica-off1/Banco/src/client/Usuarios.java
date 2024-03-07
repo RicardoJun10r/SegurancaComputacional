@@ -30,18 +30,10 @@ public class Usuarios implements Runnable {
     @Override
     public void run() {
         String mensagem;
-        if(this.clientSocket.receberObjeto() != null){ 
-            this.seguranca.setChave((SecretKey) this.clientSocket.receberObjeto()); 
-        }
         while ((mensagem = this.clientSocket.getMessage()) != null) {
             if (mensagem.split(" ")[0].equals("status")) {
                 logado = Boolean.parseBoolean(mensagem.split(" ")[1]);
-                // if (logado) {
-                //     SecretKey chaveSecreta = new SecretKeySpec(
-                //             mensagem.split(" ")[2].getBytes(StandardCharsets.UTF_8),
-                //             "HmacSHA256");
-                //     this.seguranca.setChave(chaveSecreta);
-                // }
+                this.seguranca.setChave((SecretKey) this.clientSocket.receberObjeto());
             } else {
                 System.out.println(
                         "Resposta do banco: " + mensagem);
@@ -126,12 +118,12 @@ public class Usuarios implements Runnable {
                 System.out.println("> Quantia");
                 System.out.print("> ");
                 msg += this.scan.next();
-                msg_cifrada = this.seguranca.cifrar("3;" + msg, Seguranca.chave);
+                msg_cifrada = this.seguranca.cifrar("3;" + msg);
                 hmac = this.seguranca.hMac(msg);
                 System.out.println("msg_cifrada: " + msg_cifrada);
                 System.out.println("hmac: " + hmac);
-                System.out.println("Chave: " + Seguranca.chave);
-                enviar(msg_cifrada + ";" + hmac + ";" + Seguranca.chave);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
                 break;
             case "4":
                 System.out.println("> CPF");
