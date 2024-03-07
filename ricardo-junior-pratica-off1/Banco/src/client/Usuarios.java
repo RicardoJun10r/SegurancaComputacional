@@ -112,13 +112,14 @@ public class Usuarios implements Runnable {
         String hmac;
         switch (option) {
             case "3":
+                msg = "3;";
                 System.out.println("> CPF");
                 System.out.print("> ");
-                msg = this.scan.next() + ";";
+                msg += this.scan.next() + ";";
                 System.out.println("> Quantia");
                 System.out.print("> ");
                 msg += this.scan.next();
-                msg_cifrada = this.seguranca.cifrar("3;" + msg);
+                msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
                 System.out.println("msg_cifrada: " + msg_cifrada);
                 System.out.println("hmac: " + hmac);
@@ -126,31 +127,49 @@ public class Usuarios implements Runnable {
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "4":
+                msg = "4;";
                 System.out.println("> CPF");
                 System.out.print("> ");
-                msg = this.scan.next() + ";";
+                msg += this.scan.next() + ";";
                 System.out.println("> Quantia");
                 System.out.print("> ");
                 msg += this.scan.next();
-                enviar("4;" + msg);
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
                 break;
             case "5":
+                msg = "5;";
                 System.out.println("> Seu CPF");
                 System.out.print("> ");
-                msg = this.scan.next() + ";";
+                msg += this.scan.next() + ";";
                 System.out.println("> Enviar para qual CPF ?");
                 System.out.print("> ");
                 msg += this.scan.next() + ";";
                 System.out.println("> Quantia");
                 System.out.print("> ");
                 msg += this.scan.next();
-                enviar("5;" + msg);
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
                 break;
             case "6":
+                 msg = "6;";
                 System.out.println("> CPF");
                 System.out.print("> ");
-                msg = this.scan.next() + ";";
-                enviar("6;" + msg);
+                msg += this.scan.next();
+                msg_cifrada = this.seguranca.cifrar(msg);
+                hmac = this.seguranca.hMac(msg);
+                System.out.println("msg_cifrada: " + msg_cifrada);
+                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
+                System.out.println("Chave: " + this.seguranca.getChave());
+                enviar(msg_cifrada + ";" + hmac);
                 break;
             case "7":
                 break;

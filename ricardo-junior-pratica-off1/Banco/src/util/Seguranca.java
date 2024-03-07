@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -15,7 +14,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 public class Seguranca implements Serializable {
 
@@ -126,7 +124,8 @@ public class Seguranca implements Serializable {
                 | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return codificar(bytesHMAC);
+
+        return Base64.getEncoder().encodeToString(bytesHMAC);
     }
 
 }

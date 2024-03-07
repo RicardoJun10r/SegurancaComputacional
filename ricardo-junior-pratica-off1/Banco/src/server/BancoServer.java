@@ -57,10 +57,12 @@ public class BancoServer {
 
     private void clientMessageLoop(ClientSocket clientSocket) throws IOException {
         String mensagem;
+        String hmac = "";
         try {
             while ((mensagem = clientSocket.getMessage()) != null) {
                 if(!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")){
                     System.out.println("ENTREI: " + mensagem);
+                    hmac = mensagem.split(";")[1];
                     mensagem = seguranca.decifrar(mensagem.split(";")[0]);
                     System.out.println("DECIFRADO: " + mensagem);
                 }
@@ -111,7 +113,7 @@ public class BancoServer {
                     }
                     case "3": {
                         // SAQUE
-                        if (autenticarMensagem(mensagem.split(";")[0], mensagem.split(";")[1])) {
+                        if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[3] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
                             ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
@@ -128,7 +130,7 @@ public class BancoServer {
                     }
                     case "4": {
                         // DEPÓSITO
-                        if (autenticarMensagem(mensagem.split(";")[0], mensagem.split(";")[1])) {
+                        if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[4] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
                             ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
@@ -145,7 +147,7 @@ public class BancoServer {
                     }
                     case "5": {
                         // TRANSFERÊNCIA
-                        if (autenticarMensagem(mensagem.split(";")[0], mensagem.split(";")[1])) {
+                        if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[5] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
                             ContaCorrente contaCorrenteEmissor = this.tabela
@@ -169,7 +171,8 @@ public class BancoServer {
                     }
                     case "6": {
                         // SALDO
-                        if (autenticarMensagem(mensagem.split(";")[0], mensagem.split(";")[1])) {
+                        if (autenticarMensagem(mensagem, hmac)) {
+                            System.out.println("MENSAGEM APROVADA");
                             System.out.println(
                                     "[6] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
                             ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
@@ -199,7 +202,8 @@ public class BancoServer {
     }
 
     private Boolean autenticarMensagem(String mensagem, String hmac_recebido) {
-        String hmac = seguranca.hMac(mensagem.split(";")[0]);
+        System.out.println("??????? " + mensagem);
+        String hmac = seguranca.hMac(mensagem);
         System.out.println("hmac: " + hmac + "\nhmac_recebido: " + hmac_recebido);
         if (hmac.equals(hmac_recebido))
             return true;
