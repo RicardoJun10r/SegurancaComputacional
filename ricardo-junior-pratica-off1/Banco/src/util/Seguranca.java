@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -61,30 +60,25 @@ public class Seguranca implements Serializable {
         geradorDeChaves = KeyGenerator.getInstance("AES");
         geradorDeChaves.init(t);
         chave = geradorDeChaves.generateKey();
-        System.out.println(Arrays.toString(chave.getEncoded()));
     }
 
     private void gerarChaveVernan(int t){
-        StringBuilder chave = new StringBuilder();
+        String chave = "";
 
         for (int i = 0; i < t; i++) {
             char caractere = (char) ('a' + Math.random() * ('z' - 'a' + 1));
-            chave.append(caractere);
+            chave += caractere;
         }
         this.vernan = chave.toString();
     }
 
     public String cifrar(String textoAberto) {
 
-        System.out.println("CIFRANDO");
-
         String textoCifradoVernan = cifrarVernan(textoAberto);
 
         byte[] bytesMensagemCifrada = null;
-        Cipher cifrador = null;
-        // Encriptar mensagem
 
-        System.out.println("CHAVE: " + chave);
+        Cipher cifrador = null;
 
         mensagem = textoCifradoVernan;
         try {
@@ -92,8 +86,6 @@ public class Seguranca implements Serializable {
             cifrador.init(Cipher.ENCRYPT_MODE, chave);
             bytesMensagemCifrada = cifrador.doFinal(mensagem.getBytes());
             mensagemCifrada = codificar(bytesMensagemCifrada);
-            System.out.println(
-                    ">> Mensagem cifrada = " + mensagemCifrada);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
                 | InvalidKeyException e) {
             e.printStackTrace();
@@ -119,7 +111,6 @@ public class Seguranca implements Serializable {
 
     public String decifrar(String textoCifrado) {
 
-        // Decriptação
         byte[] bytesMensagemCifrada = decodificar(textoCifrado);
         String mensagemDecifrada = "";
 

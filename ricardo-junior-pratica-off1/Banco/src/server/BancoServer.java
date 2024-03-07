@@ -65,10 +65,8 @@ public class BancoServer {
         try {
             while ((mensagem = clientSocket.getMessage()) != null) {
                 if (!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")) {
-                    System.out.println("ENTREI: " + mensagem);
                     hmac = mensagem.split(";")[1];
                     mensagem = seguranca.decifrar(mensagem.split(";")[0]);
-                    System.out.println("DECIFRADO: " + mensagem);
                 }
                 switch (mensagem.split(";")[0]) {
                     case "sair": {
@@ -91,7 +89,6 @@ public class BancoServer {
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                System.out.println("Enviando Chave: " + seguranca.getChave().toString());
                                 clientSocket.enviarObjeto(seguranca.getChave());
                             } else {
                                 unicast(clientSocket, "status false");
@@ -283,9 +280,7 @@ public class BancoServer {
     }
 
     private Boolean autenticarMensagem(String mensagem, String hmac_recebido) {
-        System.out.println("??????? " + mensagem);
         String hmac = seguranca.hMac(mensagem);
-        System.out.println("hmac: " + hmac + "\nhmac_recebido: " + hmac_recebido);
         if (hmac.equals(hmac_recebido))
             return true;
         else
