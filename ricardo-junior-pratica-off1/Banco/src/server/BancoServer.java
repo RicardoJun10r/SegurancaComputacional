@@ -79,23 +79,28 @@ public class BancoServer {
                         // AUTENTICAR
                         System.out.println(
                                 "[1] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
-                        ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
-                                .getValor();
-                        if (contaCorrente != null) {
-                            if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
-                                unicast(clientSocket, "status true " + seguranca.getChaveVernan());
                                 try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
+                                    ContaCorrente contaCorrente = this.tabela.BuscarCF(Integer.parseInt(mensagem.split(";")[1]))
+                                            .getValor();
+                                    if (contaCorrente != null) {
+                                        if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
+                                            unicast(clientSocket, "status true " + seguranca.getChaveVernan());
+                                            try {
+                                                Thread.sleep(100);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            clientSocket.enviarObjeto(seguranca.getChave());
+                                        } else {
+                                            unicast(clientSocket, "status false");
+                                        }
+                                    } else {
+                                        unicast(clientSocket, "status false");
+                                    }
+                                    
+                                } catch (NullPointerException e) {
                                     e.printStackTrace();
                                 }
-                                clientSocket.enviarObjeto(seguranca.getChave());
-                            } else {
-                                unicast(clientSocket, "status false");
-                            }
-                        } else {
-                            unicast(clientSocket, "status false");
-                        }
                         break;
                     }
                     case "2": {
