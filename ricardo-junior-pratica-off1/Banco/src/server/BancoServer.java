@@ -29,13 +29,13 @@ public class BancoServer {
     public BancoServer() {
         this.tabela = new Table<>();
         this.tabela.Adicionar(
-                new ContaCorrente("João Silva", "123", "Rua A, 123", "987654321", "senha123"),
+                new ContaCorrente("João Silva", "123", "Rua A, 123", "987654321", "senha123", 100.0),
                 Integer.parseInt("123"));
         this.tabela.Adicionar(
-                new ContaCorrente("Maria Oliveira", "456", "Rua B, 456", "123456789", "senha456"),
+                new ContaCorrente("Maria Oliveira", "456", "Rua B, 456", "123456789", "senha456", 100.0),
                 Integer.parseInt("456"));
         this.tabela.Adicionar(
-                new ContaCorrente("Carlos Santos", "789", "Rua C, 789", "456789012", "senha789"),
+                new ContaCorrente("Carlos Santos", "789", "Rua C, 789", "456789012", "senha789", 100.0),
                 Integer.parseInt("789"));
     }
 

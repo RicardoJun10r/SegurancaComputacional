@@ -19,6 +19,16 @@ public class ContaCorrente implements Serializable {
 
     private Boolean logado;
 
+    public ContaCorrente(String nome, String cpf, String endereco, String telefone, String senha, Double saldo) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.endereco = endereco;
+        this.telefone = telefone;
+        this.senha = senha;
+        this.saldo = saldo;
+        this.logado = false;
+    }
+
     public ContaCorrente(String nome, String cpf, String endereco, String telefone, String senha) {
         this.nome = nome;
         this.cpf = cpf;
