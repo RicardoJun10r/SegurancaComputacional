@@ -23,6 +23,8 @@ public class Seguranca implements Serializable {
 
     private SecretKey chave;
 
+    private String vernan;
+
     private String mensagem;
 
     private String mensagemCifrada;
@@ -30,6 +32,7 @@ public class Seguranca implements Serializable {
     public Seguranca(int num) {
         try {
             gerarChave(num);
+            gerarChaveVernan(num);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -39,23 +42,43 @@ public class Seguranca implements Serializable {
     }
 
     public void setChave(SecretKey secretKey) {
-        chave = secretKey;
+        this.chave = secretKey;
     }
 
     public SecretKey getChave() {
         return chave;
     }
 
-    public void gerarChave(int t) throws NoSuchAlgorithmException {
+    public void setChaveVernan(String vernan) {
+        this.vernan = vernan;
+    }
+
+    public String getChaveVernan() {
+        return vernan;
+    }
+
+    private void gerarChave(int t) throws NoSuchAlgorithmException {
         geradorDeChaves = KeyGenerator.getInstance("AES");
         geradorDeChaves.init(t);
         chave = geradorDeChaves.generateKey();
         System.out.println(Arrays.toString(chave.getEncoded()));
     }
 
+    private void gerarChaveVernan(int t){
+        StringBuilder chave = new StringBuilder();
+
+        for (int i = 0; i < t; i++) {
+            char caractere = (char) ('a' + Math.random() * ('z' - 'a' + 1));
+            chave.append(caractere);
+        }
+        this.vernan = chave.toString();
+    }
+
     public String cifrar(String textoAberto) {
 
         System.out.println("CIFRANDO");
+
+        String textoCifradoVernan = cifrarVernan(textoAberto);
 
         byte[] bytesMensagemCifrada = null;
         Cipher cifrador = null;
@@ -63,7 +86,7 @@ public class Seguranca implements Serializable {
 
         System.out.println("CHAVE: " + chave);
 
-        mensagem = textoAberto;
+        mensagem = textoCifradoVernan;
         try {
             cifrador = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cifrador.init(Cipher.ENCRYPT_MODE, chave);
@@ -110,7 +133,7 @@ public class Seguranca implements Serializable {
                 | InvalidKeyException e) {
             e.printStackTrace();
         }
-        return mensagem;
+        return decifrarVernan(mensagem);
     }
 
     public String hMac(String mensagem) {
@@ -127,5 +150,27 @@ public class Seguranca implements Serializable {
 
         return Base64.getEncoder().encodeToString(bytesHMAC);
     }
+
+    public String cifrarVernan(String texto_original) {
+        
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < texto_original.length(); i++) {
+            
+            char charMensagem = texto_original.charAt(i);
+            
+            char charKey = this.vernan.charAt(i % this.vernan.length());
+
+            char charCifrado = (char)(charMensagem ^ charKey);
+
+            stringBuilder.append(charCifrado);
+
+        }
+
+        return stringBuilder.toString();
+
+    }
+
+    public String decifrarVernan(String texto_cifrado) { return cifrarVernan(texto_cifrado); }
 
 }

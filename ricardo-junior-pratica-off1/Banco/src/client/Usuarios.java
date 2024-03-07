@@ -33,6 +33,7 @@ public class Usuarios implements Runnable {
         while ((mensagem = this.clientSocket.getMessage()) != null) {
             if (mensagem.split(" ")[0].equals("status")) {
                 logado = Boolean.parseBoolean(mensagem.split(" ")[1]);
+                this.seguranca.setChaveVernan(mensagem.split(" ")[2]);
                 this.seguranca.setChave((SecretKey) this.clientSocket.receberObjeto());
             } else {
                 System.out.println(
@@ -121,9 +122,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "4":
@@ -136,9 +134,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "5":
@@ -154,9 +149,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "6":
@@ -166,9 +158,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "7":
@@ -184,9 +173,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "8":
@@ -202,9 +188,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "9":
@@ -220,9 +203,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "10":
@@ -238,9 +218,6 @@ public class Usuarios implements Runnable {
                 msg += this.scan.next();
                 msg_cifrada = this.seguranca.cifrar(msg);
                 hmac = this.seguranca.hMac(msg);
-                System.out.println("msg_cifrada: " + msg_cifrada);
-                System.out.println("hmac: " + hmac + "\nmsg do hmac: " + msg);
-                System.out.println("Chave: " + this.seguranca.getChave());
                 enviar(msg_cifrada + ";" + hmac);
                 break;
             case "sair":

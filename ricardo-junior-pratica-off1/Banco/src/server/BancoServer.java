@@ -85,7 +85,7 @@ public class BancoServer {
                                 .getValor();
                         if (contaCorrente != null) {
                             if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
-                                unicast(clientSocket, "status true");
+                                unicast(clientSocket, "status true " + seguranca.getChaveVernan());
                                 try {
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
@@ -234,7 +234,7 @@ public class BancoServer {
                         break;
                     }
                     case "9": {
-                        // INVESTIMENTOS
+                        // SIMULAÇÃO POUPANÇA
                         if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
@@ -249,7 +249,7 @@ public class BancoServer {
                         break;
                     }
                     case "10": {
-                        // INVESTIMENTOS
+                        // SIMULAÇÃO RENDA FIXA
                         if (autenticarMensagem(mensagem, hmac)) {
                             System.out.println(
                                     "[7] Mensagem de " + clientSocket.getSocketAddress() + ": " + mensagem);
