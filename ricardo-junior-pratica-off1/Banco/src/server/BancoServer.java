@@ -20,7 +20,7 @@ public class BancoServer {
 
     private Table<ContaCorrente, Integer> tabela;
 
-    private Seguranca seguranca;
+    public static final Seguranca seguranca = new Seguranca();
 
     public BancoServer() {
         this.tabela = new Table<>();
@@ -33,7 +33,6 @@ public class BancoServer {
         this.tabela.Adicionar(
                 new ContaCorrente("Carlos Santos", "789", "Rua C, 789", "456789012", "senha789"),
                 Integer.parseInt("789"));
-        this.seguranca = Seguranca.getInstance();
     }
 
     public void start() throws IOException {
@@ -62,7 +61,7 @@ public class BancoServer {
             while ((mensagem = clientSocket.getMessage()) != null) {
                 if(!mensagem.split(";")[0].equals("1") && !mensagem.split(";")[0].equals("2")){
                     System.out.println("ENTREI: " + mensagem);
-                    mensagem = this.seguranca.decifrar(mensagem.split(";")[0], mensagem.split(";")[2]);
+                    mensagem = this.seguranca.decifrar(mensagem.split(";")[0], Seguranca.chave);
                     System.out.println("DECIFRADO: " + mensagem);
                 }
                 switch (mensagem.split(";")[0]) {
@@ -80,7 +79,7 @@ public class BancoServer {
                                 .getValor();
                         if (contaCorrente != null) {
                             if (mensagem.split(";")[2].equals(contaCorrente.getSenha())) {
-                                unicast(clientSocket, "status true " + this.seguranca.getChave().toString());
+                                unicast(clientSocket, "status true ");
                             } else {
                                 unicast(clientSocket, "status false");
                             }

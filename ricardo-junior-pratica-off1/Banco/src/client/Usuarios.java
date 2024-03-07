@@ -23,7 +23,6 @@ public class Usuarios implements Runnable {
     public Usuarios() {
         this.scan = new Scanner(System.in);
         this.logado = false;
-        this.seguranca = Seguranca.getInstance();
     }
 
     @Override
@@ -122,12 +121,12 @@ public class Usuarios implements Runnable {
                 System.out.println("> Quantia");
                 System.out.print("> ");
                 msg += this.scan.next();
-                msg_cifrada = this.seguranca.cifrar("3;" + msg, this.seguranca.getChave());
+                msg_cifrada = this.seguranca.cifrar("3;" + msg, Seguranca.chave);
                 hmac = this.seguranca.hMac(msg);
                 System.out.println("msg_cifrada: " + msg_cifrada);
                 System.out.println("hmac: " + hmac);
-                System.out.println("Chave: " + this.seguranca.getChave().toString());
-                enviar(msg_cifrada + ";" + hmac + ";" + this.seguranca.getChave().toString());
+                System.out.println("Chave: " + Seguranca.chave);
+                enviar(msg_cifrada + ";" + hmac + ";" + Seguranca.chave);
                 break;
             case "4":
                 System.out.println("> CPF");

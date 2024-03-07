@@ -17,45 +17,25 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Seguranca {
 
-    private static Seguranca instance;
-
     public static final String ALG = "HmacSHA256";
 
     private KeyGenerator geradorDeChaves;
 
-    private SecretKey chave;
+    public static SecretKey chave;
 
     private String mensagem;
 
     private String mensagemCifrada;
 
-    private Seguranca() {
+    public Seguranca(int num){
         try {
-            gerarChave(192);
+            gerarChave(num);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public static Seguranca getInstance() {
-        if (instance == null) {
-            synchronized (Seguranca.class) {
-                if (instance == null) {
-                    System.out.println("INSTANCIANDO");
-                    instance = new Seguranca();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public void setChave(SecretKey chave) {
-        this.chave = chave;
-    }
-
-    public SecretKey getChave() {
-        return this.chave;
-    }
+    public Seguranca(){}
 
     public void gerarChave(int t) throws NoSuchAlgorithmException {
         geradorDeChaves = KeyGenerator.getInstance("AES");
@@ -65,6 +45,9 @@ public class Seguranca {
     }
 
     public String cifrar(String textoAberto, SecretKey chave) {
+
+        System.out.println("CIFRANDO");
+
         byte[] bytesMensagemCifrada = null;
         Cipher cifrador = null;
         // Encriptar mensagem
@@ -101,20 +84,11 @@ public class Seguranca {
         return bytesCifrados;
     }
 
-    public String decifrar(String textoCifrado, String chave) {
+    public String decifrar(String textoCifrado, SecretKey chave) {
 
         // byte[] chaveBytes = chave.getBytes(StandardCharsets.UTF_8);
 
         // // Criar uma instância de SecretKeySpec
-
-        System.out.println("CHAVE CHEGOU: " + chave);
-
-        byte[] decodedKey = decodificar(Base64.getEncoder().encodeToString(chave));
-
-        // rebuild key using SecretKeySpec
-        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, ALG); 
-
-        System.out.println("Chave gerada: " + originalKey.toString());
 
         // Decriptação
         byte[] bytesMensagemCifrada = decodificar(textoCifrado);
@@ -123,7 +97,7 @@ public class Seguranca {
 
         try {
             decriptador = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            decriptador.init(Cipher.DECRYPT_MODE, originalKey);
+            decriptador.init(Cipher.DECRYPT_MODE, chave);
             byte[] bytesMensagemDecifrada = decriptador.doFinal(bytesMensagemCifrada);
             mensagemDecifrada = new String(bytesMensagemDecifrada);
             mensagem = mensagemDecifrada;
